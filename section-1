@@ -1,0 +1,180 @@
+#section-1
+#Convert List of List into Spark Dataframe using Row
+list = [['nitheesh','22'],['bhushan','21']]
+newDF = spark.createDataFrame(map(lambda x : Row(*x),list))
+newDF.show()
+
+'''
++--------+---+
+|      _1| _2|
++--------+---+
+|nitheesh| 22|
+| bhushan| 21|
++--------+---+
+'''
+
+#Convert List of Tuples into Spark Dataframe using Row
+list = [('nitheesh','22'),('bhushan','21')]
+newDF = spark.createDataFrame(map(lambda x : Row(*x),list))
+newDF.show()
+'''
++--------+---+
+|      _1| _2|
++--------+---+
+|nitheesh| 22|
+| bhushan| 21|
++--------+---+
+'''
+
+#Convert List of Dicts into Spark Dataframe using Row
+dict = [{"Name":"nitheesh",'age':"22"},{"Name":"booshan",'age':"21"}]
+newDF = spark.createDataFrame(map(lambda x : Row(**x),dict))
+newDF.show()
+'''
++--------+---+
+|    Name|age|
++--------+---+
+|nitheesh| 22|
+| booshan| 21|
++--------+---+
+'''
+
+#Overview of Basic Data Types in Spark
+'''
+All PySpark SQL Data Types extends DataType class and contains the following methods.
+
+jsonValue() – Returns JSON representation of the data type.
+simpleString() – Returns data type in a simple string. For collections, it returns what type of value collection holds.
+typeName() – Returns just the date type.
+fromJson() – Create Data type from JSON String.
+json() – Returns JSON representation of the data type.
+needConversion() – Does this type needs conversion between Python object and internal SQL object.
+toInternal() – Converts a Python object into an internal SQL object.
+fromInternal() – Converts an internal SQL object into a native Python object.
+
+DataTypes: 
+StringType()
+MapType()
+DateType()
+ArrayType()
+'''
+
+from pyspark.sql.types import *
+Arraytype = ArrayType(IntegerType())
+print(Arraytype.jsonValue())
+print(Arraytype.typeName())
+print(Arraytype.simpleString())
+
+
+#Struct Type Columns in Spark Dataframes
+
+from pyspark.sql.types import *
+data = [("James","","Smith","36636","M",3000),
+    ("Michael","Rose","","40288","M",4000),
+    ("Robert","","Williams","42114","M",4000),
+    ("Maria","Anne","Jones","39192","F",4000),
+    ("Jen","Mary","Brown","","F",-1)]
+
+
+schema = StructType([StructField("First_Name",StringType(),True),
+   StructField("Middle_Name",StringType(),True),
+   StructField("Last_Name",StringType(),True),
+   StructField("ID",StringType(),True),
+   StructField("gender",StringType(),True),
+   StructField("salary",IntegerType(),True)])
+
+newDF = spark.createDataFrame(data,schema=schema)
+newDF.printSchema()
+newDF.show()
+
+'''
+root
+ |-- First_Name: string (nullable = true)
+ |-- Middle_Name: string (nullable = true)
+ |-- Last_Name: string (nullable = true)
+ |-- ID: string (nullable = true)
+ |-- gender: string (nullable = true)
+ |-- salary: integer (nullable = true)
+
++----------+-----------+---------+-----+------+------+
+|First_Name|Middle_Name|Last_Name|   ID|gender|salary|
++----------+-----------+---------+-----+------+------+
+|     James|           |    Smith|36636|     M|  3000|
+|   Michael|       Rose|         |40288|     M|  4000|
+|    Robert|           | Williams|42114|     M|  4000|
+|     Maria|       Anne|    Jones|39192|     F|  4000|
+|       Jen|       Mary|    Brown|     |     F|    -1|
++----------+-----------+---------+-----+------+------+
+'''
+
+#ArrayType column in DataFrame
+
+data = [
+ ("James,,Smith",["Java","Scala","C++"],["Spark","Java"],"OH","CA"),
+ ("Michael,Rose,",["Spark","Java","C++"],["Spark","Java"],"NY","NJ"),
+ ("Robert,,Williams",["CSharp","VB"],["Spark","Python"],"UT","NV")
+]
+schema = StructType([StructField("name",StringType(),True),
+   StructField("languages",ArrayType(StringType()),True),
+   StructField("languages",ArrayType(StringType()),True),
+   StructField("prevState",StringType(),True),
+   StructField("currentState",StringType(),True)])
+
+newDF = spark.createDataFrame(data,schema=schema)
+newDF.printSchema()
+newDF.show()
+
+
+'''
+root
+ |-- name: string (nullable = true)
+ |-- languages: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- languages: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- prevState: string (nullable = true)
+ |-- currentState: string (nullable = true)
+
++----------------+------------------+---------------+---------+------------+
+|            name|         languages|      languages|prevState|currentState|
++----------------+------------------+---------------+---------+------------+
+|    James,,Smith|[Java, Scala, C++]|  [Spark, Java]|       OH|          CA|
+|   Michael,Rose,|[Spark, Java, C++]|  [Spark, Java]|       NY|          NJ|
+|Robert,,Williams|      [CSharp, VB]|[Spark, Python]|       UT|          NV|
++----------------+------------------+---------------+---------+------------+
+'''
+
+
+#mapType column in DataFrame
+dataDictionary = [
+        ('James',{'hair':'black','eye':'brown'}),
+        ('Michael',{'hair':'brown','eye':None}),
+        ('Robert',{'hair':'red','eye':'black'}),
+        ('Washington',{'hair':'grey','eye':'grey'}),
+        ('Jefferson',{'hair':'brown','eye':''})
+        ]
+
+schema = StructType([StructField('name',StringType(),True),
+                    StructField('properties',MapType(StringType(),StringType()),True)])
+
+newDF = spark.createDataFrame(dataDictionary,schema=schema)
+newDF.printSchema()
+newDF.show(truncate=False)
+
+'''
+root
+ |-- name: string (nullable = true)
+ |-- properties: map (nullable = true)
+ |    |-- key: string
+ |    |-- value: string (valueContainsNull = true)
+
++----------+-----------------------------+
+|name      |properties                   |
++----------+-----------------------------+
+|James     |{eye -> brown, hair -> black}|
+|Michael   |{eye -> null, hair -> brown} |
+|Robert    |{eye -> black, hair -> red}  |
+|Washington|{eye -> grey, hair -> grey}  |
+|Jefferson |{eye -> , hair -> brown}     |
++----------+-----------------------------+
+'''
