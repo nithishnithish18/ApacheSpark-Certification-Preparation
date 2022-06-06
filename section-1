@@ -1,3 +1,17 @@
+section-1 
+	-> create spark dataframe
+	-> Create Single Column Spark Dataframe using List
+	-> Create Multi Column Spark Dataframe using List
+	-> Overview of Spark Row
+	-> Convert List of Lists into Spark Dataframe using Row
+	-> Convert List of Tuples into Spark Dataframe using Row
+	-> Convert List of Dicts into Spark Dataframe using Row
+	-> Overview of Basic Data Types in Spark
+	-> StructType column in spark Dataframe
+	-> ArrayType Column in spark Dataframe
+	-> MapType column in spark Dataframe
+
+
 #section-1
 #Convert List of List into Spark Dataframe using Row
 list = [['nitheesh','22'],['bhushan','21']]
